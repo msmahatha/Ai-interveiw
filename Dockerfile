@@ -19,14 +19,20 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
+# Install envsubst for environment variable substitution
+RUN apk add --no-cache gettext
+
 # Copy built app to nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy frontend-only nginx configuration
-COPY nginx-frontend-only.conf /etc/nginx/nginx.conf
+# Copy nginx template configuration
+COPY nginx-template.conf /etc/nginx/nginx.conf.template
 
-# Expose port
-EXPOSE 80
+# Set default PORT if not provided
+ENV PORT=80
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Expose the port (will be dynamic based on PORT env var)
+EXPOSE $PORT
+
+# Start script that substitutes environment variables and starts nginx
+CMD envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'

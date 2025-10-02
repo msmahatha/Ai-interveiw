@@ -1,0 +1,37 @@
+services:
+  # Backend API Service
+  - type: web
+    name: ai-interview-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm ci && npm run build
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false  # Set in Render dashboard
+      - key: JWT_SECRET
+        sync: false  # Set in Render dashboard
+      - key: FIREBASE_PROJECT_ID
+        sync: false  # Set in Render dashboard
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false  # Set in Render dashboard
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false  # Set in Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false  # Set in Render dashboard
+      - key: CORS_ORIGIN
+        value: https://your-app-name.netlify.app
+    autoDeploy: true
+    rootDir: ./
+    
+    # Health check configuration
+    disk:
+      name: ai-interview-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

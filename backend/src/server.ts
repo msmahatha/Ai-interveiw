@@ -36,7 +36,8 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
+    // Development origins
+    const developmentOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
@@ -57,10 +58,26 @@ app.use(cors({
       'http://localhost:5190'
     ];
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Production origins
+    const productionOrigins = [
+      process.env.CORS_ORIGIN,
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    // Combine all allowed origins
+    const allowedOrigins = [...developmentOrigins, ...productionOrigins];
+    
+    // Also allow Netlify deploy previews (*.netlify.app)
+    const isNetlifyDeploy = origin && (
+      origin.includes('.netlify.app') || 
+      origin.includes('--')  // Deploy previews have -- in URL
+    );
+    
+    if (allowedOrigins.includes(origin) || isNetlifyDeploy) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
       callback(new Error('Not allowed by CORS'));
     }
   },

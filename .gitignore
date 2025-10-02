@@ -33,6 +33,8 @@ backend/build/
 .env.development
 .env.test
 .env.production
+.env.render
+.env.netlify
 backend/.env
 backend/.env.local
 backend/.env.development

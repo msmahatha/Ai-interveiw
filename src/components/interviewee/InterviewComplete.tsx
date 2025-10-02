@@ -7,8 +7,7 @@ import { RootState, AppDispatch } from '@/store/store'
 import InterviewService from '@/services/interviewService'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { getScoreColor, formatTime } from '@/lib/utils'
+import { formatTime } from '@/lib/utils'
 
 export default function InterviewComplete() {
   const navigate = useNavigate()

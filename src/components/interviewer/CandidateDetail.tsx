@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  User, Mail, Phone, Calendar, Clock, Award, 
+  Mail, Phone, Award, 
   ChevronDown, ChevronUp, Download, X 
 } from 'lucide-react'
 
 import { Candidate } from '@/store/candidatesSlice'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'

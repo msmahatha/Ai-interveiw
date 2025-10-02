@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { generateInitials, getScoreColor, formatTime } from '@/lib/utils'
+import { generateInitials, getScoreColor } from '@/lib/utils'
 
 interface CandidateGridProps {
   candidates: Candidate[]

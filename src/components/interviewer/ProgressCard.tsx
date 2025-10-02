@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, Circle } from 'lucide-react'
 import { getDifficultyColor } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+
 
 interface ProgressCardProps {
   currentQuestion: number

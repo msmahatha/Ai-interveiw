@@ -7,6 +7,7 @@ services:
     plan: free
     buildCommand: cd backend && npm ci && npm run build
     startCommand: cd backend && npm start
+    runtime: node20
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV

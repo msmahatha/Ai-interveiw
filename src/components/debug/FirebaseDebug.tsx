@@ -1,7 +1,7 @@
 // Debug component to test Firebase configuration
 import { useEffect, useState } from 'react';
 import { auth } from '@/config/firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function FirebaseDebug() {
   const [status, setStatus] = useState('Checking Firebase configuration...');

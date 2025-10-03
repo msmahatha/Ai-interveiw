@@ -8,26 +8,35 @@ const router = Router();
 
 // Register/Login user
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {
-  console.log('📝 Registration attempt started');
+  console.log('📝 Registration attempt started with body:', { 
+    hasFirebaseToken: !!req.body.firebaseToken, 
+    name: req.body.name, 
+    role: req.body.role 
+  });
+  
   const { firebaseToken, name, role = 'candidate' } = req.body;
 
-  if (!firebaseToken || !name) {
-    console.error('❌ Missing required fields:', { firebaseToken: !!firebaseToken, name: !!name });
-    throw createError('Firebase token and name are required', 400);
+  if (!firebaseToken) {
+    console.error('❌ Firebase token is required');
+    throw createError('Firebase token is required', 400);
   }
 
+  if (!name) {
+    console.error('❌ Name is required');
+    throw createError('Name is required', 400);
+  }
+
+  let decodedToken;
   try {
     console.log('🔥 Verifying Firebase token...');
-    // Verify Firebase token
-    const decodedToken = await verifyFirebaseToken(firebaseToken);
+    decodedToken = await verifyFirebaseToken(firebaseToken);
     const { uid, email } = decodedToken;
-    console.log('✅ Firebase token verified for user:', uid);
+    console.log('✅ Firebase token verified for user:', { uid, email });
   } catch (error) {
     console.error('❌ Firebase token verification failed:', error);
     throw createError('Invalid Firebase token', 401);
   }
 
-  const decodedToken = await verifyFirebaseToken(firebaseToken);
   const { uid, email } = decodedToken;
 
   if (!email) {
@@ -35,49 +44,83 @@ router.post('/register', asyncHandler(async (req: Request, res: Response) => {
     throw createError('Email not found in Firebase token', 400);
   }
 
+  let user;
   try {
-    console.log('🔍 Checking if user exists in database...');
-    // Check if user already exists
-    let user = await User.findOne({ uid });
-    console.log('📊 User lookup result:', user ? 'User found' : 'New user');
+    console.log('🔍 Checking if user exists in database for uid:', uid);
+    user = await User.findOne({ uid });
+    console.log('📊 User lookup result:', user ? `User found: ${user.email}` : 'New user - will create');
   } catch (dbError) {
     console.error('❌ Database query failed:', dbError);
     throw createError('Database connection error', 500);
   }
 
-  let user = await User.findOne({ uid });
+  try {
+    if (user) {
+      // Update existing user if needed
+      console.log('📝 Updating existing user:', user.email);
+      user.name = name;
+      user.role = role;
+      user.isActive = true;
+      await user.save();
+      console.log('✅ User updated successfully');
+    } else {
+      // Create new user
+      console.log('🆕 Creating new user with email:', email);
+      user = new User({
+        uid,
+        email,
+        name,
+        role,
+        isActive: true,
+      });
+      await user.save();
+      console.log('✅ New user created successfully');
+    }
 
-  if (user) {
-    // Update existing user if needed
-    user.name = name;
-    user.role = role;
-    user.isActive = true;
-    await user.save();
-  } else {
-    // Create new user
-    user = new User({
-      uid,
-      email,
-      name,
-      role,
-      isActive: true,
+    res.status(200).json({
+      success: true,
+      message: user.isNew ? 'User created successfully' : 'User updated successfully',
+      data: {
+        user: {
+          uid: user.uid,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt,
+        },
+      },
     });
-    await user.save();
+  } catch (saveError) {
+    console.error('❌ Failed to save user to database:', saveError);
+    throw createError('Failed to save user', 500);
+  }
+}));
+
+// Test Firebase token verification (for debugging)
+router.post('/test-token', asyncHandler(async (req: Request, res: Response) => {
+  console.log('🧪 Testing Firebase token verification');
+  const { firebaseToken } = req.body;
+
+  if (!firebaseToken) {
+    throw createError('Firebase token is required for testing', 400);
   }
 
-  res.status(200).json({
-    success: true,
-    message: user ? 'User updated successfully' : 'User created successfully',
-    data: {
-      user: {
-        uid: user.uid,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        createdAt: user.createdAt,
+  try {
+    const decodedToken = await verifyFirebaseToken(firebaseToken);
+    res.status(200).json({
+      success: true,
+      message: 'Firebase token is valid',
+      data: {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        aud: decodedToken.aud,
+        iss: decodedToken.iss,
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error('❌ Firebase token test failed:', error);
+    throw createError('Invalid Firebase token', 401);
+  }
 }));
 
 // Get current user profile

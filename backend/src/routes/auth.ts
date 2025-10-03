@@ -8,13 +8,28 @@ const router = Router();
 
 // Register/Login user
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {
-  console.log('📝 Registration attempt started with body:', { 
-    hasFirebaseToken: !!req.body.firebaseToken, 
-    name: req.body.name, 
-    role: req.body.role 
-  });
+  console.log('📝 Registration attempt started');
   
-  const { firebaseToken, name, role = 'candidate' } = req.body;
+  // Extract Firebase token from Authorization header or body (fallback)
+  const authHeader = req.headers.authorization;
+  let firebaseToken: string | undefined;
+  
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    firebaseToken = authHeader.substring(7); // Remove 'Bearer ' prefix
+    console.log('🔑 Firebase token extracted from Authorization header');
+  } else if (req.body.firebaseToken) {
+    firebaseToken = req.body.firebaseToken;
+    console.log('🔑 Firebase token extracted from request body (fallback)');
+  }
+  
+  const { name, role = 'candidate' } = req.body;
+  
+  console.log('📝 Registration data:', { 
+    hasFirebaseToken: !!firebaseToken, 
+    name, 
+    role,
+    tokenSource: authHeader ? 'header' : 'body'
+  });
 
   if (!firebaseToken) {
     console.error('❌ Firebase token is required');
@@ -99,7 +114,18 @@ router.post('/register', asyncHandler(async (req: Request, res: Response) => {
 // Test Firebase token verification (for debugging)
 router.post('/test-token', asyncHandler(async (req: Request, res: Response) => {
   console.log('🧪 Testing Firebase token verification');
-  const { firebaseToken } = req.body;
+  
+  // Extract Firebase token from Authorization header or body (fallback)
+  const authHeader = req.headers.authorization;
+  let firebaseToken: string | undefined;
+  
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    firebaseToken = authHeader.substring(7);
+    console.log('🔑 Test token extracted from Authorization header');
+  } else if (req.body.firebaseToken) {
+    firebaseToken = req.body.firebaseToken;
+    console.log('🔑 Test token extracted from request body (fallback)');
+  }
 
   if (!firebaseToken) {
     throw createError('Firebase token is required for testing', 400);
@@ -184,7 +210,17 @@ router.put('/profile', authenticate, asyncHandler(async (req: any, res: Response
 
 // Verify token endpoint
 router.post('/verify', asyncHandler(async (req: Request, res: Response) => {
-  const { firebaseToken } = req.body;
+  // Extract Firebase token from Authorization header or body (fallback)
+  const authHeader = req.headers.authorization;
+  let firebaseToken: string | undefined;
+  
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    firebaseToken = authHeader.substring(7);
+    console.log('🔑 Verify token extracted from Authorization header');
+  } else if (req.body.firebaseToken) {
+    firebaseToken = req.body.firebaseToken;
+    console.log('🔑 Verify token extracted from request body (fallback)');
+  }
 
   if (!firebaseToken) {
     throw createError('Firebase token is required', 400);

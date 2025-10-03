@@ -5,6 +5,7 @@ import { User as FirebaseUser } from 'firebase/auth'
 import { RootState, AppDispatch } from '@/store/store'
 import { setUser, setInitialized, setLoading } from '@/store/authSlice'
 import authService from '@/services/authService'
+import api from '@/services/api'
 
 interface AuthProviderProps {
   children: ReactNode
@@ -37,28 +38,16 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             if (error.response?.status === 401) {
               console.log('User not found in backend database, attempting to register...')
               try {
-                // Try to register the user in our backend
-                const firebaseToken = await firebaseUser.getIdToken()
-                const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://ai-interview-backend-3wh5.onrender.com/api'}/auth/register`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    firebaseToken,
-                    name: firebaseUser.displayName || firebaseUser.email || 'User',
-                    role: 'candidate', // Default role
-                  })
-                })
+                // Wait a moment to ensure Firebase token is available
+                await new Promise(resolve => setTimeout(resolve, 100))
                 
-                if (response.ok) {
-                  const result = await response.json()
-                  console.log('User successfully registered in backend:', result.data.user)
-                  dispatch(setUser(result.data.user))
-                } else {
-                  console.error('Failed to register user in backend:', await response.text())
-                  console.warn('Failed to register user in backend, but user is authenticated in Firebase')
-                }
+                // Try to register the user using api service (which properly handles token in headers)
+                const response = await api.post('/auth/register', {
+                  name: firebaseUser.displayName || firebaseUser.email || 'User',
+                  role: 'candidate', // Default role
+                })
+                console.log('User successfully registered in backend:', response.data.data.user)
+                dispatch(setUser(response.data.data.user))
               } catch (registerError) {
                 console.error('Registration error:', registerError)
                 console.warn('Failed to register user in backend, but user is authenticated in Firebase')

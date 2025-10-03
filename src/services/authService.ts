@@ -32,12 +32,11 @@ class AuthService {
       // Update display name
       await updateProfile(firebaseUser, { displayName: name });
 
-      // Get Firebase token
-      const firebaseToken = await firebaseUser.getIdToken();
+      // Get Firebase token (will be automatically added to headers by interceptor)
+      await firebaseUser.getIdToken();
 
       // Register user in our backend
       const response = await api.post('/auth/register', {
-        firebaseToken,
         name,
         role,
       });
@@ -55,21 +54,18 @@ class AuthService {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Get Firebase token
-      const firebaseToken = await firebaseUser.getIdToken();
+      // Get Firebase token (will be automatically added to headers by interceptor)
+      await firebaseUser.getIdToken();
 
       try {
         // First try to verify with our backend
-        const response = await api.post('/auth/verify', {
-          firebaseToken,
-        });
+        const response = await api.post('/auth/verify', {});
         return response.data.data.user;
       } catch (verifyError: any) {
         // If verify fails (user not in our database), try to register them
         if (verifyError.response?.status === 404) {
           console.log('User not found in backend, registering...');
           const registerResponse = await api.post('/auth/register', {
-            firebaseToken,
             name: firebaseUser.displayName || firebaseUser.email || 'User',
             role: 'candidate', // Default role for sign-in users
           });
@@ -90,12 +86,11 @@ class AuthService {
       const userCredential = await signInWithPopup(auth, provider);
       const firebaseUser = userCredential.user;
 
-      // Get Firebase token
-      const firebaseToken = await firebaseUser.getIdToken();
+      // Get Firebase token (will be automatically added to headers by interceptor)
+      await firebaseUser.getIdToken();
 
       // Register/login user in our backend
       const response = await api.post('/auth/register', {
-        firebaseToken,
         name: firebaseUser.displayName || 'User',
         role,
       });

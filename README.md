@@ -1,9 +1,6 @@
 # Crisp - AI-Powered Interview Assistant
 
-A modern AI-powered interview platform that streamlines the technical interview process with intelligent automation, real-time evaluation, and comprehensive candidate management.
-
-**🌐 Live Demo**: [https://ai-interveiw.netlify.app](https://ai-interveiw.netlify.app)
-**🔗 Backend API**: [https://ai-interview-backend-3wh5.onrender.com](https://ai-interview-backend-3wh5.onrender.com)
+A revolutionary AI-powered interview platform that streamlines the technical interview process with intelligent automation, real-time evaluation, and comprehensive candidate management.
 
 ![Crisp Logo](public/crisp-logo.svg)
 
@@ -30,108 +27,69 @@ A modern AI-powered interview platform that streamlines the technical interview 
 - **📱 Responsive Design**: Works flawlessly on desktop, tablet, and mobile devices
 - **♿ Accessibility**: WCAG 2.1 AA compliant with keyboard navigation and screen reader support
 - **⚡ Performance**: Optimized with lazy loading, code splitting, and efficient state management
-- **🔒 Security**: Firebase authentication with secure backend API integration
-- **☁️ Full-Stack**: Complete frontend and backend deployment with real-time data synchronization
+- **🔒 Security**: Client-side data processing with no server dependencies
 
 ## 🛠️ Tech Stack
 
-### Frontend (Netlify)
+### Frontend
 - **React 18** with TypeScript for type-safe development
 - **Redux Toolkit** + **Redux Persist** for state management and persistence
 - **Tailwind CSS** + **shadcn/ui** for modern, accessible components
 - **Framer Motion** for smooth animations and transitions
 - **React Router** for client-side routing
-- **Firebase Auth** for user authentication
-
-### Backend (Render)
-- **Node.js** + **Express.js** for REST API
-- **MongoDB Atlas** for database storage
-- **Firebase Admin SDK** for token verification
-- **CORS** configured for cross-origin requests
 
 ### Libraries & Tools
 - **React Dropzone** for drag-and-drop file uploads
-- **Axios** for API communication with interceptors
+- **React Hook Form** + **Zod** for form validation
 - **Lucide React** for beautiful, consistent icons
+- **date-fns** for date manipulation and formatting
 - **Sonner** for elegant toast notifications
+- **UUID** for unique identifier generation
 
-### AI Integration (Google Gemini)
-- **Question Generation**: Contextual technical questions based on resume
+### AI Integration (Mock Implementation)
+- **Question Generation**: Contextual technical questions based on role
 - **Answer Evaluation**: Intelligent scoring with detailed feedback
-- **Resume Parsing**: AI-powered candidate data extraction
+- **Summary Generation**: AI-powered candidate assessment summaries
 
 ## 📦 Installation
 
 ### Prerequisites
 - Node.js 18+ and npm/yarn
-- Firebase project for authentication
-- MongoDB Atlas for database
-- Google Gemini API key (optional)
+- Modern web browser with ES6+ support
 
-### Frontend Setup
+### Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/msmahatha/Ai-interveiw.git
-   cd Ai-interveiw
+   git clone https://github.com/yourusername/crisp-interview-assistant.git
+   cd crisp-interview-assistant
    ```
 
 2. **Install dependencies**
    ```bash
    npm install
+   # or
+   yarn install
    ```
 
-3. **Create environment file**
-   ```bash
-   cp .env.example .env
-   ```
-
-4. **Configure environment variables**
-   ```env
-   # Firebase Configuration
-   VITE_FIREBASE_API_KEY=your_firebase_api_key
-   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   
-   # Backend API
-   VITE_API_URL=http://localhost:3001/api
-   
-   # AI Service (Optional)
-   VITE_GEMINI_API_KEY=your_gemini_api_key
-   ```
-
-5. **Start development server**
+3. **Start the development server**
    ```bash
    npm run dev
+   # or
+   yarn dev
    ```
 
-### Backend Setup
+4. **Open your browser**
+   Navigate to `http://localhost:5173`
 
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   npm install
-   ```
+### Environment Variables
 
-2. **Configure backend environment**
-   ```env
-   # MongoDB
-   MONGODB_URI=your_mongodb_connection_string
-   
-   # Firebase Admin SDK
-   FIREBASE_PROJECT_ID=your_project_id
-   FIREBASE_PRIVATE_KEY=your_private_key
-   FIREBASE_CLIENT_EMAIL=your_client_email
-   
-   # Security
-   JWT_SECRET=your_jwt_secret
-   CORS_ORIGIN=http://localhost:5173
-   ```
+Create a `.env` file in the root directory:
 
-3. **Start backend server**
-   ```bash
-   npm run dev
-   ```
+```env
+VITE_AI_API_KEY=your_api_key_here
+VITE_AI_PROVIDER=openai
+```
 
 ## 🎯 Usage
 
@@ -182,20 +140,26 @@ All components use Tailwind CSS classes for easy customization:
 - Update component-specific classes for local changes
 - Use CSS custom properties for dynamic theming
 
-## 🚀 Live Deployment
+## 🚀 Deployment
 
-The application is currently deployed and accessible at:
+### Build for Production
+```bash
+npm run build
+# or
+yarn build
+```
 
-- **Frontend**: [https://ai-interveiw.netlify.app](https://ai-interveiw.netlify.app) (Netlify)
-- **Backend**: [https://ai-interview-backend-3wh5.onrender.com](https://ai-interview-backend-3wh5.onrender.com) (Render)
+### Deploy to Vercel
+```bash
+npm i -g vercel
+vercel --prod
+```
 
-### Features Available:
-- ✅ User authentication (Email/Password + Google Sign-in)
-- ✅ Resume upload and parsing
-- ✅ AI-powered interview questions
-- ✅ Real-time scoring and feedback
-- ✅ Interview management dashboard
-- ✅ Candidate reports and analytics
+### Deploy to Netlify
+```bash
+npm i -g netlify-cli
+netlify deploy --prod
+```
 
 ## 📊 Performance Metrics
 
@@ -204,13 +168,12 @@ The application is currently deployed and accessible at:
 - **Cumulative Layout Shift**: < 0.1
 - **Time to Interactive**: < 3.5s
 
-## 🔒 Security Features
+## 🔒 Security Considerations
 
-- **Firebase Authentication**: Secure user authentication with JWT tokens
-- **CORS Protection**: Backend configured with proper CORS policies
-- **Environment Variables**: Sensitive data stored securely in environment variables
-- **Token Verification**: All API requests validated with Firebase Admin SDK
-- **Data Encryption**: User data encrypted at rest in MongoDB Atlas
+- **Client-Side Processing**: All data processing happens locally
+- **No External APIs**: Mock AI implementation for demo purposes
+- **Data Privacy**: No user data transmitted to external servers
+- **Secure Storage**: IndexedDB with encryption for sensitive data
 
 ## 🤝 Contributing
 
@@ -233,16 +196,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Lucide** for the consistent icon set
 - **Tailwind CSS** for the utility-first styling approach
 
-## � Known Issues
-
-- Resume parsing currently uses mock data (shows "Example Name" and "example@example.com")
-- AI question generation fallback to predefined questions if Gemini API fails
-- Database operations are fully functional with user authentication
-
 ## 📞 Support
 
-For issues and questions, please create an issue on GitHub or contact the development team.
+For support, email support@crisp-interviews.com or join our Slack channel.
 
 ---
 
-**Built with ❤️ for modern technical interviews**
+**Built with ❤️ by the Crisp Team**

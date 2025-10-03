@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import App from './App'
 import IntervieweePage from './pages/IntervieweePage'
 import InterviewerPage from './pages/InterviewerPage'
+import AuthDebugger from './components/debug/AuthDebugger'
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
       {
         path: '/interviewer',
         element: <InterviewerPage />
+      },
+      {
+        path: '/debug-auth',
+        element: <AuthDebugger />
       }
     ]
   }

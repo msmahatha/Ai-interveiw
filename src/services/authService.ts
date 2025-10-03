@@ -58,12 +58,25 @@ class AuthService {
       // Get Firebase token
       const firebaseToken = await firebaseUser.getIdToken();
 
-      // Verify with our backend
-      const response = await api.post('/auth/verify', {
-        firebaseToken,
-      });
-
-      return response.data.data.user;
+      try {
+        // First try to verify with our backend
+        const response = await api.post('/auth/verify', {
+          firebaseToken,
+        });
+        return response.data.data.user;
+      } catch (verifyError: any) {
+        // If verify fails (user not in our database), try to register them
+        if (verifyError.response?.status === 404) {
+          console.log('User not found in backend, registering...');
+          const registerResponse = await api.post('/auth/register', {
+            firebaseToken,
+            name: firebaseUser.displayName || firebaseUser.email || 'User',
+            role: 'candidate', // Default role for sign-in users
+          });
+          return registerResponse.data.data.user;
+        }
+        throw verifyError;
+      }
     } catch (error: any) {
       console.error('Sign in error:', error);
       throw new Error(error.response?.data?.message || error.message || 'Sign in failed');

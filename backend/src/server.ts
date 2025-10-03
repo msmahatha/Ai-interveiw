@@ -131,8 +131,33 @@ app.get('/api/test', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
-    firebase: process.env.FIREBASE_PROJECT_ID ? 'Configured' : 'Not configured',
+    firebase: {
+      configured: !!process.env.FIREBASE_PROJECT_ID,
+      projectId: process.env.FIREBASE_PROJECT_ID ? 'Set' : 'Not set',
+      privateKey: process.env.FIREBASE_PRIVATE_KEY ? 'Set' : 'Not set',
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL ? 'Set' : 'Not set',
+    },
   });
+});
+
+// Firebase debug endpoint
+app.get('/api/firebase-debug', async (req, res) => {
+  try {
+    const firebaseApp = await initializeFirebase();
+    res.status(200).json({
+      success: true,
+      message: 'Firebase is properly initialized',
+      projectId: firebaseApp.options.projectId,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Firebase initialization failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // Root route

@@ -62,11 +62,25 @@ export const getFirebaseApp = (): admin.app.App => {
 
 export const verifyFirebaseToken = async (token: string): Promise<admin.auth.DecodedIdToken> => {
   try {
+    console.log('🔍 Verifying Firebase token...');
+    if (!token) {
+      throw new Error('No token provided');
+    }
+    
     const app = getFirebaseApp();
+    console.log('🔥 Using Firebase app with project ID:', app.options.projectId);
+    
     const decodedToken = await app.auth().verifyIdToken(token);
+    console.log('✅ Token verified successfully for user:', decodedToken.uid);
     return decodedToken;
   } catch (error) {
-    throw new Error('Invalid or expired token');
+    console.error('❌ Firebase token verification failed:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      tokenProvided: !!token,
+      tokenLength: token ? token.length : 0,
+      tokenPrefix: token ? token.substring(0, 20) + '...' : 'None'
+    });
+    throw new Error(`Invalid or expired token: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 

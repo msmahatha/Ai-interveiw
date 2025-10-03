@@ -17,9 +17,11 @@ export const authenticate = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    console.log('🔐 Authentication attempt for:', req.method, req.path);
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('❌ No auth header or invalid format:', authHeader ? 'Invalid format' : 'Missing header');
       res.status(401).json({
         success: false,
         message: 'No token provided or invalid format',
@@ -28,14 +30,50 @@ export const authenticate = async (
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    console.log('🔍 Token received, verifying with Firebase...');
 
-    // Verify Firebase token
+    try {
+      // Verify Firebase token
+      const decodedToken = await verifyFirebaseToken(token);
+      console.log('✅ Firebase token verified for user:', decodedToken.uid);
+    } catch (firebaseError) {
+      console.error('❌ Firebase token verification failed:', firebaseError);
+      res.status(401).json({
+        success: false,
+        message: 'Invalid or expired Firebase token',
+      });
+      return;
+    }
+
     const decodedToken = await verifyFirebaseToken(token);
 
-    // Find user in our database
-    const user = await User.findOne({ uid: decodedToken.uid });
+    try {
+      console.log('🔍 Looking up user in database:', decodedToken.uid);
+      // Find user in our database
+      const user = await User.findOne({ uid: decodedToken.uid });
+      console.log('📊 Database user lookup:', user ? 'User found' : 'User not found');
 
+      if (!user || !user.isActive) {
+        console.log('❌ User not found or inactive in database');
+        res.status(401).json({
+          success: false,
+          message: 'User not found or inactive',
+        });
+        return;
+      }
+    } catch (dbError) {
+      console.error('❌ Database lookup failed in auth middleware:', dbError);
+      res.status(500).json({
+        success: false,
+        message: 'Database error during authentication',
+      });
+      return;
+    }
+
+    const user = await User.findOne({ uid: decodedToken.uid });
+    
     if (!user || !user.isActive) {
+      console.log('❌ User not found or inactive in final check');
       res.status(401).json({
         success: false,
         message: 'User not found or inactive',
@@ -51,6 +89,7 @@ export const authenticate = async (
       role: user.role,
     };
 
+    console.log('✅ Authentication successful for user:', user.uid);
     next();
   } catch (error) {
     console.error('Authentication error:', error);

@@ -8,21 +8,43 @@ const router = Router();
 
 // Register/Login user
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {
+  console.log('📝 Registration attempt started');
   const { firebaseToken, name, role = 'candidate' } = req.body;
 
   if (!firebaseToken || !name) {
+    console.error('❌ Missing required fields:', { firebaseToken: !!firebaseToken, name: !!name });
     throw createError('Firebase token and name are required', 400);
   }
 
-  // Verify Firebase token
+  try {
+    console.log('🔥 Verifying Firebase token...');
+    // Verify Firebase token
+    const decodedToken = await verifyFirebaseToken(firebaseToken);
+    const { uid, email } = decodedToken;
+    console.log('✅ Firebase token verified for user:', uid);
+  } catch (error) {
+    console.error('❌ Firebase token verification failed:', error);
+    throw createError('Invalid Firebase token', 401);
+  }
+
   const decodedToken = await verifyFirebaseToken(firebaseToken);
   const { uid, email } = decodedToken;
 
   if (!email) {
+    console.error('❌ Email not found in Firebase token');
     throw createError('Email not found in Firebase token', 400);
   }
 
-  // Check if user already exists
+  try {
+    console.log('🔍 Checking if user exists in database...');
+    // Check if user already exists
+    let user = await User.findOne({ uid });
+    console.log('📊 User lookup result:', user ? 'User found' : 'New user');
+  } catch (dbError) {
+    console.error('❌ Database query failed:', dbError);
+    throw createError('Database connection error', 500);
+  }
+
   let user = await User.findOne({ uid });
 
   if (user) {

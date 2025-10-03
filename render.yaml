@@ -1,38 +1,37 @@
 services:
-  # Backend API Service
   - type: web
-    name: ai-interview-backend
-    env: node
-    region: oregon
+    name: crisp-backend
+    runtime: node
     plan: free
-    buildCommand: cd backend && npm ci && npm run build
-    startCommand: cd backend && npm start
-    runtime: node20
+    region: oregon
+    branch: main
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: "20"
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 10000
+        fromService:
+          type: web
+          name: crisp-backend
+          property: port
       - key: MONGODB_URI
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: JWT_SECRET
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: FIREBASE_PROJECT_ID
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: FIREBASE_CLIENT_EMAIL
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: FIREBASE_PRIVATE_KEY
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: GEMINI_API_KEY
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: CORS_ORIGIN
-        value: https://your-app-name.netlify.app
-    autoDeploy: true
-    rootDir: ./
-    
-    # Health check configuration
-    disk:
-      name: ai-interview-data
-      mountPath: /opt/render/project/src/data
-      sizeGB: 1
+        value: https://ai-interveiw.netlify.app
+      - key: FRONTEND_URL
+        value: https://ai-interveiw.netlify.app

@@ -175,6 +175,8 @@ const startServer = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5176'}`);
+      console.log(`🔗 CORS Origin: ${process.env.CORS_ORIGIN || 'Not set'}`);
+      console.log(`🔥 Firebase Project: ${process.env.FIREBASE_PROJECT_ID || 'Not set'}`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);

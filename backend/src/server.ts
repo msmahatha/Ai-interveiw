@@ -63,7 +63,8 @@ app.use(cors({
       process.env.CORS_ORIGIN,
       process.env.FRONTEND_URL,
       'https://ai-interveiw.netlify.app',  // Specific Netlify domain
-      'https://ai-interview-backend-3wh5.onrender.com'  // Backend self-reference
+      'https://ai-interview-backend-3wh5.onrender.com',  // Backend self-reference
+      'https://ai-interveiw.onrender.com'  // Old URL for backward compatibility
     ].filter(Boolean);
     
     // Combine all allowed origins

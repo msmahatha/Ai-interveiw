@@ -2,6 +2,7 @@ import axios from 'axios';
 import { auth } from '../config/firebase';
 
 // Create axios instance with base configuration
+// Updated to use new Render backend URL: ai-interview-backend-3wh5.onrender.com
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://ai-interview-backend-3wh5.onrender.com/api',
   timeout: 10000,

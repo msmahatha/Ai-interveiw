@@ -50,8 +50,8 @@ export default function ResumeUpload() {
 
       // Mock extracted data (in real app, this would parse the PDF/DOCX)
       const mockData: ExtractedData = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
+        name: 'Example Name',
+        email: 'example@example.com',
         phone: '+1234567890'
       }
 
